@@ -1,5 +1,7 @@
-package com.example.project;
+package com.example.project.config;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -13,7 +15,6 @@ import java.security.NoSuchAlgorithmException;
 
 @Configuration
 public class ApplicationConfig {
-
     @Bean
     public RestTemplate restTemplate(RestTemplateBuilder builder) throws NoSuchAlgorithmException, KeyManagementException {
         CloseableHttpClient httpClient = HttpClientBuilder.create().setMaxConnTotal(200).setMaxConnPerRoute(200).build();
@@ -24,6 +25,14 @@ public class ApplicationConfig {
         customRequestFactory.setReadTimeout(30000);     // read timeout 30초 설정
 
         return builder.requestFactory(() -> customRequestFactory).build(); //restTemplate 설정
+    }
+
+    @Bean
+    public ObjectMapper objectMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.findAndRegisterModules();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        return mapper;
     }
 
 }
