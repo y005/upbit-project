@@ -1,8 +1,13 @@
 package com.example.project.entity;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "BTC")
 public class Btc5MinuteCandle {
@@ -25,4 +30,16 @@ public class Btc5MinuteCandle {
 
     @Column(name = "volume")
     private double volume;
+
+    public Btc5MinuteCandle(LocalDateTime time, double openingPrice, double highPrice, double lowPrice, double volume) {
+        this.time = time;
+        this.openingPrice = openingPrice;
+        this.highPrice = highPrice;
+        this.lowPrice = lowPrice;
+        this.volume = volume;
+    }
+
+    public Btc5MinuteCandle() {
+
+    }
 }

@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
@@ -32,7 +31,6 @@ public class MyUpbitCandleClient implements UpbitCandleClient {
         this.objectMapper = objectMapper;
     }
 
-    //비트코인 5분봉 크롤링해서 데이터 디비에 저장하기(2022년 05월 01일 00:00 부터 2022년 05월 31일 23:55)
     @Override
     public List<MinuteCandle> getMinuteCandle(MinuteType minuteType, MarketType marketType, int count, LocalDateTime localDateTime) {
         String url = makeUrl(minuteType.getMinute(), marketType.getType(), count, localDateTime);
