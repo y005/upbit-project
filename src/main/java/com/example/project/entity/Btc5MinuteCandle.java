@@ -22,6 +22,9 @@ public class Btc5MinuteCandle {
     @Column(name = "opening_price")
     private double openingPrice;
 
+    @Column(name = "trade_price")
+    private double tradePrice;
+
     @Column(name = "high_price")
     private double highPrice;
 
@@ -31,15 +34,14 @@ public class Btc5MinuteCandle {
     @Column(name = "volume")
     private double volume;
 
-    public Btc5MinuteCandle(LocalDateTime time, double openingPrice, double highPrice, double lowPrice, double volume) {
+    public Btc5MinuteCandle(LocalDateTime time, double openingPrice, double tradePrice, double highPrice, double lowPrice, double volume) {
         this.time = time;
         this.openingPrice = openingPrice;
+        this.tradePrice = tradePrice;
         this.highPrice = highPrice;
         this.lowPrice = lowPrice;
         this.volume = volume;
     }
 
-    public Btc5MinuteCandle() {
-
-    }
+    public Btc5MinuteCandle() {}
 }

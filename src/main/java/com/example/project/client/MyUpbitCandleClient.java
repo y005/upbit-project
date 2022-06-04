@@ -9,9 +9,10 @@ import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
-import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -33,38 +34,27 @@ public class MyUpbitCandleClient implements UpbitCandleClient {
 
     @Override
     public List<MinuteCandle> getMinuteCandle(MinuteType minuteType, MarketType marketType, int count, LocalDateTime localDateTime) {
-        String url = makeUrl(minuteType.getMinute(), marketType.getType(), count, localDateTime);
+        URI url = makeUrl(minuteType.getMinute(), marketType.getType(), count, localDateTime);
         Object[] objects = request(url);
         return Arrays.stream(objects)
                 .map(object -> objectMapper.convertValue(object, MinuteCandle.class))
                 .collect(toList());
     }
 
-    private String makeUrl(int unit, String marketType, int count, LocalDateTime time) {
-        StringBuilder url = new StringBuilder(upbitConfig.getServerUrl());
-
-        url.append("/v1/candles/minutes/");
-        url.append(unit);
-        url.append("?market=");
-        url.append(marketType);
-        url.append("&count=");
-        url.append(count);
-        url.append("&to=");
-
-        String timeEncode = time.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:00"));
-        try {
-            timeEncode = URLEncoder.encode(timeEncode, "UTF-8");
-            url.append(timeEncode);
-            return url.toString();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        return "";
+    private URI makeUrl(int unit, String marketType, int count, LocalDateTime time) {
+        return UriComponentsBuilder
+                .fromUriString(upbitConfig.getServerUrl())
+                .path("/v1/candles/minutes/{unit}")
+                .queryParam("market", marketType)
+                .queryParam("to", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(time))
+                .queryParam("count", count)
+                .encode(StandardCharsets.UTF_8)
+                .buildAndExpand(unit)
+                .toUri();
     }
 
-    private Object[] request(String url) {
-        RequestEntity<Void> request = RequestEntity.get(URI.create(url))
+    private Object[] request(URI url) {
+        RequestEntity<Void> request = RequestEntity.get(url)
                 .accept(MediaType.APPLICATION_JSON)
                 .build();
 
