@@ -1,19 +1,22 @@
-package com.example.project.config;
+package com.example.project.enums;
 
 import java.util.Arrays;
 
-public enum ModeType {
-    BACKTESTER("backtester"),
-    ORDERER("orderer"),
-    CRAWLER("crawler");
+public enum TradeType {
+    //매수
+    BID("bid"),
+    //매도
+    ASK("ask"),
+    HOLD("hold"),
+    ;
 
     private final String type;
 
-    ModeType(String type) {
+    TradeType(String type) {
         this.type = type;
     }
 
-    public static ModeType toModeType(String type) {
+    public static TradeType toTradeType(String type) {
         return Arrays.stream(values()).filter((e)->e.toString().equals(type)).findFirst().orElseThrow(()-> new RuntimeException("type not found"));
     }
 

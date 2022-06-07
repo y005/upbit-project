@@ -1,5 +1,6 @@
 package com.example.project.client;
 
+import com.example.project.enums.MarketType;
 import com.trader.common.enums.MinuteType;
 import com.trader.common.utils.MinuteCandle;
 import org.junit.jupiter.api.Test;

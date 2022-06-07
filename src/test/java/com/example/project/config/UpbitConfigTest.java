@@ -20,11 +20,11 @@ class UpbitConfigTest {
 
     @Test
     void getAccessKey() {
-        assertThat(upbitConfig.getAccessKey(), is("w3WADLSdcVmRUMCtNAemNIxo7Ba1YPmZvlUVNuzn"));
+        assertThat(upbitConfig.getAccessKey(), is("ul4mG5syi3fo4EUWoxxbpGSxKzj3r94Y3Wcb3wx1"));
     }
 
     @Test
     void getSecretKey() {
-        assertThat(upbitConfig.getSecretKey(), is("Y4Ne1QeIY7Dr1RRMow5ARScNQFkz7ogo5wp0Qrq2"));
+        assertThat(upbitConfig.getSecretKey(), is("7Rxgz97yvm8wFe6H8mmFVYnkKmQfttB0Va8Wryp7"));
     }
 }

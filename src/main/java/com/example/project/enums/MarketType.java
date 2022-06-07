@@ -1,4 +1,4 @@
-package com.example.project.client;
+package com.example.project.enums;
 
 import java.util.Arrays;
 

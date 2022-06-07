@@ -1,5 +1,6 @@
 package com.example.project.service;
 
+import com.example.project.enums.MarketType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,7 @@ class UpbitCrawlerServiceTest {
 
     @Test
     void save() {
-        upbitService.saveBtcInfo(LocalDateTime.now());
+        upbitService.saveCoin5MinCandleInfo(MarketType.KRW_BTC, LocalDateTime.now());
     }
 
     @Test
@@ -32,7 +33,7 @@ class UpbitCrawlerServiceTest {
                 flag = false;
                 for (int k = 5; k < 60; k += 5){
                     try {
-                        upbitService.saveBtcInfo(LocalDateTime.of(2022, Month.APRIL, i, j, k, 0));
+                        upbitService.saveCoin5MinCandleInfo(MarketType.KRW_BTC, LocalDateTime.of(2022, Month.APRIL, i, j, k, 0));
                         apiCall = (apiCall + 1) % 10;
                         if (apiCall == 0) {
                             Thread.sleep(1000);
@@ -53,7 +54,7 @@ class UpbitCrawlerServiceTest {
                 flag = false;
                 for (int k = 5; k < 60; k += 5){
                     try {
-                        upbitService.saveBtcInfo(LocalDateTime.of(2022, Month.MAY, i, j, k, 0));
+                        upbitService.saveCoin5MinCandleInfo(MarketType.KRW_BTC, LocalDateTime.of(2022, Month.MAY, i, j, k, 0));
                         apiCall = (apiCall + 1) % 10;
                         if (apiCall == 0) {
                             Thread.sleep(1000);
