@@ -24,7 +24,7 @@ import static java.util.stream.Collectors.toList;
 
 @Component
 @AllArgsConstructor
-public class MyUpbitCandleClient implements UpbitCandleClient {
+public class MyUpbitCrawlClient implements UpbitCrawlClient {
     private final UpbitConfig upbitConfig;
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;

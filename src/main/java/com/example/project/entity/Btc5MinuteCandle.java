@@ -1,5 +1,6 @@
 package com.example.project.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,7 +17,7 @@ public class Btc5MinuteCandle {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "start_time")
+    @Column(name = "start_time", unique = true)
     private LocalDateTime time;
 
     @Column(name = "opening_price")
@@ -43,5 +44,7 @@ public class Btc5MinuteCandle {
         this.volume = volume;
     }
 
-    public Btc5MinuteCandle() {}
+    public Btc5MinuteCandle() {
+
+    }
 }

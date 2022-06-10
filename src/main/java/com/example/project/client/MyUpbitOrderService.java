@@ -71,8 +71,6 @@ public class MyUpbitOrderService implements UpbitOrderService{
             String queryHash = makeQueryHash(params.toSingleValueMap());
             String token = upbitUtil.makeToken(queryHash);
             String object = request(params, token);
-            //URI url = makeOrderUrl();
-            //Object object = request(url, params, token);
             OrderResult result = objectMapper.readValue(object, OrderResult.class);
             return result;
         }
@@ -111,23 +109,5 @@ public class MyUpbitOrderService implements UpbitOrderService{
         HttpResponse response = client.execute(request);
         return EntityUtils.toString(response.getEntity(), "UTF-8");
     }
-
-//    private URI makeOrderUrl() {
-//        return UriComponentsBuilder
-//                .fromUriString(upbitConfig.getServerUrl())
-//                .path("/v1/orders")
-//                .encode(StandardCharsets.UTF_8)
-//                .buildAndExpand()
-//                .toUri();
-//    }
-//
-//    private Object request(URI url, MultiValueMap<String, String> params, String authenticationToken) {
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.APPLICATION_JSON);
-//        headers.setBearerAuth(authenticationToken);
-//        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
-//        ResponseEntity<Object> response = restTemplate.exchange(url, HttpMethod.POST, request, Object.class);
-//        return response.getBody();
-//    }
 }
 

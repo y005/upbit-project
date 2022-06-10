@@ -1,7 +1,5 @@
 package com.example.project.client;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
 import com.example.project.config.UpbitConfig;
 import com.example.project.dto.UpbitAsset;
 import com.example.project.util.UpbitUtil;

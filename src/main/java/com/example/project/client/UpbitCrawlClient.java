@@ -7,6 +7,6 @@ import com.trader.common.utils.MinuteCandle;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface UpbitCandleClient {
+public interface UpbitCrawlClient {
     List<MinuteCandle> getMinuteCandle(MinuteType minuteType, MarketType marketType, int count, LocalDateTime localDateTime);
 }
