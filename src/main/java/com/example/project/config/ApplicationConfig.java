@@ -1,11 +1,13 @@
 package com.example.project.config;
 
+import com.example.project.application.ApplicationTerminator;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -35,5 +37,10 @@ public class ApplicationConfig {
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         return mapper;
+    }
+
+    @Bean
+    public ApplicationTerminator applicationTerminator(ApplicationContext applicationContext) {
+        return new ApplicationTerminator(applicationContext, () -> 42);
     }
 }

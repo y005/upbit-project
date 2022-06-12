@@ -2,9 +2,11 @@ package com.example.project.client;
 
 import com.example.project.config.UpbitConfig;
 import com.example.project.dto.UpbitAsset;
+import com.example.project.enums.CoinType;
 import com.example.project.util.UpbitUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Component
 @AllArgsConstructor
 public class MyUpbitBacktestClient implements UpbitBacktestClient{
@@ -36,6 +39,22 @@ public class MyUpbitBacktestClient implements UpbitBacktestClient{
         return Arrays.stream(objects)
                 .map(object -> objectMapper.convertValue(object, UpbitAsset.class))
                 .collect(Collectors.toMap(UpbitAsset::getCurrency, Function.identity()));
+    }
+
+    @Override
+    public double getMoney() {
+        return getUpbitWallet().get("KRW").getBalance();
+    }
+
+    @Override
+    public double getCoinVolume(CoinType currency) {
+        try {
+            return getUpbitWallet().get(currency.getType()).getBalance();
+        }
+        catch (Exception e) {
+            log.info("코인 정보 조회 중 에러 발생: {}", e.getMessage());
+            return 0d;
+        }
     }
 
     private URI makeWalletUrl() {

@@ -36,8 +36,9 @@ public class Wallet {
     @Column(name = "profit_percent")
     private double profitPercent;
 
-    @Column(name = "start_time")
-    private LocalDateTime time;
+    @ManyToOne
+    @JoinColumn(name = "assets_id")
+    private Assets assets;
 
     public Wallet(String currency, double balance, double avgBuyPrice, double tradePrice, double profit, double profitPercent, LocalDateTime time) {
         this.currency = currency;
@@ -46,13 +47,6 @@ public class Wallet {
         this.tradePrice = tradePrice;
         this.profit = profit;
         this.profitPercent = profitPercent;
-        this.time = LocalDateTime.of(
-                LocalDateTime.now().getYear(),
-                LocalDateTime.now().getMonth(),
-                LocalDateTime.now().getDayOfMonth(),
-                LocalDateTime.now().getHour(),
-                LocalDateTime.now().getMinute(),
-                0);
     }
 
     public Wallet() {
@@ -83,5 +77,20 @@ public class Wallet {
         double invest = getInvest(upbitAsset);
         double profit = getProfit(upbitAsset, marketInfo);
         return (profit - invest) / invest * 100;
+    }
+
+    @Override
+    public String toString() {
+        return  "[코드: " + currency +
+                " 보유 수량: " + String.format("%.5f", balance) +
+                " 평단가: " + String.format("%.0f", avgBuyPrice) +
+                " 시장가: " + String.format("%.0f", tradePrice) +
+                " 수익: " + format(profit) +
+                " 수익률: " + format(profitPercent) +
+                "]\n";
+    }
+
+    private String format(double value) {
+        return String.format("%.2f", value);
     }
 }

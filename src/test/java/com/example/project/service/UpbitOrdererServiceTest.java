@@ -19,17 +19,27 @@ class UpbitOrdererServiceTest {
     private UpbitBacktestClient upbitBacktestClient;
 
     @Test
-    void testBuy() {
+    void buy() {
         OrderResult result = upbitOrdererService.buy(MarketType.KRW_BTC, 5000);
         System.out.println(result);
     }
 
     @Test
-    void testSell() {
+    void sell() {
         Map<String, UpbitAsset > wallet = upbitBacktestClient.getUpbitWallet();
         UpbitAsset btc = wallet.get("BTC");
 
         OrderResult result = upbitOrdererService.sell(MarketType.KRW_BTC, btc.getBalance());
         System.out.println(result);
+    }
+
+    @Test
+    void buyAll() {
+        upbitOrdererService.buyAll(MarketType.KRW_BTC);
+    }
+
+    @Test
+    void sellAll() {
+        upbitOrdererService.sellAll(MarketType.KRW_BTC);
     }
 }

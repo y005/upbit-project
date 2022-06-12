@@ -9,16 +9,13 @@ import com.example.project.util.UpbitUtil;
 import com.google.gson.Gson;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
-import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -27,24 +24,19 @@ import org.springframework.web.client.RestTemplate;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
-import java.net.URI;
 
-import org.apache.http.HttpHost;
-import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Component
 @AllArgsConstructor
-public class MyUpbitOrderService implements UpbitOrderService{
+public class MyUpbitOrderClient implements UpbitOrderClient {
     private final UpbitUtil upbitUtil;
     private final UpbitConfig upbitConfig;
     private final RestTemplate restTemplate;
@@ -72,10 +64,11 @@ public class MyUpbitOrderService implements UpbitOrderService{
             String token = upbitUtil.makeToken(queryHash);
             String object = request(params, token);
             OrderResult result = objectMapper.readValue(object, OrderResult.class);
+            log.info("주문 결과: {}", result.toString());
             return result;
         }
         catch (Exception e) {
-            e.printStackTrace();
+            log.info("주문 실행 중 에러 발생: {}", e.getMessage());
             return null;
         }
     }

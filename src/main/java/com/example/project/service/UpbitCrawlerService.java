@@ -7,6 +7,7 @@ import com.example.project.repository.Btc5MinuteCandleRepository;
 import com.trader.common.enums.MinuteType;
 import com.trader.common.utils.MinuteCandle;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -14,6 +15,7 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Component
 @AllArgsConstructor
 public class UpbitCrawlerService {
@@ -21,7 +23,20 @@ public class UpbitCrawlerService {
     private final UpbitCrawlClient upbitCandleClient;
 
     public void saveCoin5MinCandleInfo(MarketType marketType, int count, LocalDateTime localDateTime) {
-        List<MinuteCandle> result = upbitCandleClient.getMinuteCandle(MinuteType.FIVE, marketType, count, localDateTime);
+        try {
+            List<MinuteCandle> result = upbitCandleClient.getMinuteCandle(MinuteType.FIVE, marketType, count, localDateTime);
+            result.stream()
+                    .map((e) -> new Btc5MinuteCandle(e.getCandleDateTimeKst(), e.getOpeningPrice(), e.getTradePrice(), e.getHighPrice(), e.getLowPrice(), e.getCandleAccTradeVolume()))
+                    .forEach(btc5MinuteCandleRepository::save);
+        }
+        catch (Exception e) {
+            log.info("코인 정보 크롤링 중 에러 발생: {}", e.getMessage());
+        }
+    }
+
+    public void saveCoin5MinCandleInfoBefore1Hour(MarketType marketType, LocalDateTime localDateTime) {
+        LocalDateTime before1Hour = localDateTime.minusHours(1);
+        List<MinuteCandle> result = upbitCandleClient.getMinuteCandle(MinuteType.FIVE, marketType, 12, before1Hour);
         result.stream()
                 .map((e)-> new Btc5MinuteCandle(e.getCandleDateTimeKst(), e.getOpeningPrice(), e.getTradePrice(), e.getHighPrice(), e.getLowPrice(), e.getCandleAccTradeVolume()))
                 .forEach(btc5MinuteCandleRepository::save);

@@ -1,6 +1,5 @@
 package com.example.project.entity;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,7 +9,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-@Table(name = "BTC")
+@Table(name = "btc_5min_candle")
 public class Btc5MinuteCandle {
     @Id
     @Column(name = "id")
@@ -45,6 +44,17 @@ public class Btc5MinuteCandle {
     }
 
     public Btc5MinuteCandle() {
+    }
 
+    @Override
+    public String toString() {
+        return "Btc5MinuteCandle{" +
+                "time=" + time +
+                ", openingPrice=" + openingPrice +
+                ", tradePrice=" + tradePrice +
+                ", highPrice=" + highPrice +
+                ", lowPrice=" + lowPrice +
+                ", volume=" + volume +
+                '}';
     }
 }

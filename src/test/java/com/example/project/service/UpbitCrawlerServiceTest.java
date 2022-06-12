@@ -19,4 +19,10 @@ class UpbitCrawlerServiceTest {
     void saveBtcInfo() {
         upbitService.saveCoin5MinCandleInfo(MarketType.KRW_BTC, LocalDateTime.of(2022, Month.MAY, 1, 0, 0));
     }
+
+    @Test
+    @DisplayName("1시간 전 캔들차트 가져오기")
+    void saveBtc1HourInfo() {
+        upbitService.saveCoin5MinCandleInfoBefore1Hour(MarketType.KRW_BTC, LocalDateTime.now());
+    }
 }

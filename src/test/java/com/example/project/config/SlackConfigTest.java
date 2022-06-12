@@ -8,12 +8,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 @SpringBootTest
-class ModeConfigTest {
+class SlackConfigTest {
     @Autowired
-    private ModeConfig modeConfig;
+    private SlackConfig slackConfig;
 
     @Test
-    void getMode() {
-        assertThat(modeConfig.getMode(), is("background"));
+    void getUrl() {
+        assertThat(slackConfig.getUrl(), is("https://hooks.slack.com/services/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"));
     }
 }

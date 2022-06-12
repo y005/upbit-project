@@ -3,6 +3,8 @@ package com.example.project.enums;
 import java.util.Arrays;
 
 public enum ModeType {
+    MONITORING("monitoring"),
+    BACKGROUND("background"),
     BACKTESTER("backtester"),
     ORDERER("orderer"),
     CRAWLER("crawler");

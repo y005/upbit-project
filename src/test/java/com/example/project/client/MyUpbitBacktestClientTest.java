@@ -1,12 +1,11 @@
 package com.example.project.client;
 
 import com.example.project.dto.UpbitAsset;
+import com.example.project.enums.CoinType;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -33,5 +32,15 @@ class MyUpbitBacktestClientTest {
 
         assertThat(btc.getCurrency(), is("BTC"));
         System.out.println(btc.getBalance());
+    }
+
+    @Test
+    void getMoney() {
+        System.out.println(upbitBacktestClient.getMoney());
+    }
+
+    @Test
+    void getCoinVolume() {
+        System.out.println(upbitBacktestClient.getCoinVolume(CoinType.BTC));
     }
 }
