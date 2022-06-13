@@ -1,5 +1,6 @@
 package com.example.project.client;
 
+import com.example.project.annotation.BacktestErrorHandler;
 import com.example.project.config.UpbitConfig;
 import com.example.project.dto.UpbitAsset;
 import com.example.project.enums.CoinType;
@@ -47,14 +48,9 @@ public class MyUpbitBacktestClient implements UpbitBacktestClient{
     }
 
     @Override
+    @BacktestErrorHandler
     public double getCoinVolume(CoinType currency) {
-        try {
-            return getUpbitWallet().get(currency.getType()).getBalance();
-        }
-        catch (Exception e) {
-            log.info("코인 정보 조회 중 에러 발생: {}", e.getMessage());
-            return 0d;
-        }
+        return getUpbitWallet().get(currency.getType()).getBalance();
     }
 
     private URI makeWalletUrl() {

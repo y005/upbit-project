@@ -9,14 +9,14 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Aspect
 @Component
-public class MainApplicationAop {
-    @Around("@annotation(com.example.project.annotation.ErrorHandler)")
+public class SlackWebhookClientAop {
+    @Around("@annotation(com.example.project.annotation.SlackErrorHandler)")
     public void error(ProceedingJoinPoint joinPoint) {
         try {
             joinPoint.proceed();
         }
         catch (Throwable e) {
-            log.info("백그라운드 실행 중 에러 발생: {}", e.getMessage());
+            log.info("슬랙 메세지 전송 중 에러 발생: {}", e.getMessage());
         }
     }
 }

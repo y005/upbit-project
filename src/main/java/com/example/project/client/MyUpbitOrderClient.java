@@ -1,5 +1,6 @@
 package com.example.project.client;
 
+import com.example.project.annotation.OrderErrorHandler;
 import com.example.project.config.UpbitConfig;
 import com.example.project.dto.OrderResult;
 import com.example.project.enums.MarketType;
@@ -64,11 +65,9 @@ public class MyUpbitOrderClient implements UpbitOrderClient {
             String token = upbitUtil.makeToken(queryHash);
             String object = request(params, token);
             OrderResult result = objectMapper.readValue(object, OrderResult.class);
-            log.info("주문 결과: {}", result.toString());
             return result;
         }
         catch (Exception e) {
-            log.info("주문 실행 중 에러 발생: {}", e.getMessage());
             return null;
         }
     }

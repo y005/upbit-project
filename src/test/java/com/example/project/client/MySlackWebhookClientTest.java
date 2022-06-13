@@ -13,4 +13,5 @@ class MySlackWebhookClientTest {
     void sendMessage() {
         slackWebhookClient.sendMessage("hello world");
     }
+
 }

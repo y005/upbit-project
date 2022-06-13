@@ -1,5 +1,6 @@
 package com.example.project.client;
 
+import com.example.project.annotation.SlackErrorHandler;
 import com.example.project.config.SlackConfig;
 import com.example.project.dto.SlackMessage;
 import lombok.AllArgsConstructor;
@@ -19,6 +20,7 @@ public class MySlackWebhookClient implements SlackWebhookClient {
     private final RestTemplate restTemplate;
 
     @Override
+    @SlackErrorHandler
     public void sendMessage(Object data) {
         SlackMessage slackMessage = new SlackMessage(data);
         request(makeSlackWebhookUrl(), slackMessage);

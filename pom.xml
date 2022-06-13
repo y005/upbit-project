@@ -12,6 +12,7 @@
     <artifactId>project</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>project</name>
+    <packaging>jar</packaging>
     <description>project</description>
     <properties>
         <java.version>17</java.version>
