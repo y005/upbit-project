@@ -1,74 +1,90 @@
 package com.example.project.client;
 
-import com.example.project.annotation.BacktestErrorHandler;
-import com.example.project.config.UpbitConfig;
-import com.example.project.dto.UpbitAsset;
-import com.example.project.enums.CoinType;
-import com.example.project.util.UpbitUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.example.project.entity.Btc5MinuteCandle;
+import com.example.project.enums.TradeType;
+import com.example.project.repository.Btc5MinuteCandleRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
-import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Component
 @AllArgsConstructor
-public class MyUpbitBacktestClient implements UpbitBacktestClient{
-    private final UpbitUtil upbitUtil;
-    private final UpbitConfig upbitConfig;
-    private final RestTemplate restTemplate;
-    private final ObjectMapper objectMapper;
+public class MyUpbitBacktestClient implements UpbitBacktestClient {
+    private final InvestmentStrategy investmentStrategy;
+    private final Btc5MinuteCandleRepository btc5MinuteCandleRepository;
 
-    @Override
-    public Map<String, UpbitAsset> getUpbitWallet() {
-        URI url = makeWalletUrl();
-        String token = upbitUtil.makeToken();
-        Object[] objects = request(url, token);
+    private static class MockAssets {
+        public double money;
+        public double avgBuyPrice;
+        public double balance;
 
-        return Arrays.stream(objects)
-                .map(object -> objectMapper.convertValue(object, UpbitAsset.class))
-                .collect(Collectors.toMap(UpbitAsset::getCurrency, Function.identity()));
+        public MockAssets(double money, double avgBuyPrice, double balance) {
+            this.money = money;
+            this.avgBuyPrice = avgBuyPrice;
+            this.balance = balance;
+        }
     }
 
-    @Override
-    public double getMoney() {
-        return getUpbitWallet().get("KRW").getBalance();
+    public double testInvestmentStrategy(int DROP_CNT, int DROP_RATE) {
+        List<Btc5MinuteCandle> oneHourInfo = new ArrayList<>();
+        Btc5MinuteCandle currentChart = null;
+        TradeType tradeType = null;
+        MockAssets mockAssets = new MockAssets(1000000, 0, 0);
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime time = now.minusDays(30);
+
+        for (; time.isBefore(now); time = time.plusMinutes(5)) {
+            oneHourInfo = btc5MinuteCandleRepository.findBtc5MinuteCandlesByTimeBetweenOrderByTimeDesc(time, time.plusHours(1));
+            if (oneHourInfo.isEmpty()) {break;}
+            currentChart = oneHourInfo.get(0);
+            tradeType = investmentStrategy.makeDecision(oneHourInfo, DROP_CNT, DROP_RATE);
+            switch (tradeType) {
+                case BID -> {
+                    log.info("{} - 매매 판단 결과: {}", time, tradeType.getType());
+                    simulateBuyAll(mockAssets, currentChart);
+                }
+                case ASK -> {
+                    if (haveBtc(mockAssets) && isProfitable(mockAssets, currentChart)) {
+                        log.info("{} - 매매 판단 결과: {}", time, tradeType.getType());
+                        simulateSellAll(mockAssets, currentChart);
+                    }
+                }
+            }
+        }
+        return calculateProfitRatio(mockAssets, currentChart);
     }
 
-    @Override
-    @BacktestErrorHandler
-    public double getCoinVolume(CoinType currency) {
-        return getUpbitWallet().get(currency.getType()).getBalance();
+    private boolean haveBtc(MockAssets mockAssets) {
+        return mockAssets.balance > 0d;
     }
 
-    private URI makeWalletUrl() {
-        return UriComponentsBuilder
-                .fromUriString(upbitConfig.getServerUrl())
-                .path("/v1/accounts")
-                .encode(StandardCharsets.UTF_8)
-                .buildAndExpand()
-                .toUri();
+    private boolean isProfitable(MockAssets mockAssets, Btc5MinuteCandle currentChart) {
+        return mockAssets.avgBuyPrice < currentChart.getTradePrice();
     }
 
-    private Object[] request(URI url, String authenticationToken) {
-        RequestEntity<Void> request = RequestEntity.get(url)
-                .accept(MediaType.APPLICATION_JSON)
-                .header("Authorization", authenticationToken)
-                .build();
+    private void simulateBuyAll(MockAssets mockAssets, Btc5MinuteCandle currentChart) {
+        double plusBalance = mockAssets.money / currentChart.getTradePrice();
+        double prevInvest = mockAssets.avgBuyPrice * mockAssets.balance;
+        log.info("매수 정보 - 시가: {}, 비용: {}", currentChart.getTradePrice(), mockAssets.money);
+        mockAssets.money -= plusBalance * currentChart.getTradePrice();
+        mockAssets.avgBuyPrice = (prevInvest + plusBalance * currentChart.getTradePrice()) / (mockAssets.balance + plusBalance);
+        mockAssets.balance = mockAssets.balance + plusBalance;
+    }
 
-        ResponseEntity<Object[]> response = restTemplate.exchange(request, Object[].class);
-        return response.getBody();
+    private void simulateSellAll(MockAssets mockAssets, Btc5MinuteCandle info) {
+        double plusMoney = mockAssets.balance * info.getTradePrice();
+        log.info("매도 정보 - 시가: {}, 평단가: {}, 이익: {}", info.getTradePrice(), mockAssets.avgBuyPrice, plusMoney);
+        mockAssets.money += plusMoney;
+        mockAssets.avgBuyPrice = 0;
+        mockAssets.balance = 0;
+    }
+
+    private double calculateProfitRatio(MockAssets mockAssets, Btc5MinuteCandle currentChart) {
+        return (mockAssets.money + mockAssets.balance * currentChart.getTradePrice() - 1000000) / 1000000 * 100;
     }
 }

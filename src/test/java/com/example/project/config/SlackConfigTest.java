@@ -14,6 +14,6 @@ class SlackConfigTest {
 
     @Test
     void getUrl() {
-        assertThat(slackConfig.getUrl(), is("https://hooks.slack.com/services/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"));
+        assertThat(slackConfig.getWebhookUrl(), is("https://hooks.slack.com/services/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"));
     }
 }

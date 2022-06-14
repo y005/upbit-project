@@ -1,6 +1,5 @@
 package com.example.project.service;
 
-import com.example.project.entity.Assets;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,13 +10,7 @@ class UpbitBacktesterServiceTest {
     private UpbitBacktesterService upbitBacktesterService;
 
     @Test
-    void updateWallet() {
-        Assets assets = upbitBacktesterService.updateWallet();
-        System.out.println(assets.toString());
-    }
-
-    @Test
-    void sendWalletInfo() {
-        upbitBacktesterService.sendWalletInfo();
+    void backtesting() {
+        System.out.println(upbitBacktesterService.backtesting());
     }
 }

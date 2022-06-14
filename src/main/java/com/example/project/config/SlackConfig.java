@@ -8,7 +8,13 @@ import org.springframework.context.annotation.Configuration;
 @Getter
 @Setter
 @Configuration
-@ConfigurationProperties(prefix = "slack.webhook")
+@ConfigurationProperties(prefix = "slack")
 public class SlackConfig {
-    private String url;
+    private String assetsChannel;
+    private String orderChannel;
+    private String backtestChannel;
+    private String channelUrl;
+    private String chatUrl;
+    private String accessKey;
+    private String webhookUrl;
 }

@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,11 +20,11 @@ import java.util.List;
 @AllArgsConstructor
 public class UpbitCrawlerService {
     private final Btc5MinuteCandleRepository btc5MinuteCandleRepository;
-    private final UpbitCrawlClient upbitCandleClient;
+    private final UpbitCrawlClient upbitCrawlClient;
 
     @CrawlErrorHandler
     public void saveCoin5MinCandleInfo(MarketType marketType, int count, LocalDateTime localDateTime) {
-        List<MinuteCandle> result = upbitCandleClient.getMinuteCandle(MinuteType.FIVE, marketType, count, localDateTime);
+        List<MinuteCandle> result = upbitCrawlClient.getMinuteCandle(MinuteType.FIVE, marketType, count, localDateTime);
         result.stream()
                 .map((e) -> new Btc5MinuteCandle(e.getCandleDateTimeKst(), e.getOpeningPrice(), e.getTradePrice(), e.getHighPrice(), e.getLowPrice(), e.getCandleAccTradeVolume()))
                 .forEach(btc5MinuteCandleRepository::save);
@@ -35,18 +34,19 @@ public class UpbitCrawlerService {
     @CrawlErrorHandler
     public void saveCoin5MinCandleInfoBefore1Hour(MarketType marketType, LocalDateTime localDateTime) {
         LocalDateTime before1Hour = localDateTime.minusHours(1);
-        List<MinuteCandle> result = upbitCandleClient.getMinuteCandle(MinuteType.FIVE, marketType, 12, before1Hour);
+        List<MinuteCandle> result = upbitCrawlClient.getMinuteCandle(MinuteType.FIVE, marketType, 12, before1Hour);
         result.stream()
                 .map((e) -> new Btc5MinuteCandle(e.getCandleDateTimeKst(), e.getOpeningPrice(), e.getTradePrice(), e.getHighPrice(), e.getLowPrice(), e.getCandleAccTradeVolume()))
                 .forEach(btc5MinuteCandleRepository::save);
     }
 
-    public void saveCoin5MinCandleInfo(MarketType marketType, LocalDateTime localDateTime) {
+    @CrawlErrorHandler
+    public void saveCoin5MinCandleInfoBefore1Month(MarketType marketType) {
         List<MinuteCandle> result = new ArrayList<>();
-        int dayOfMonth = localDateTime.with(TemporalAdjusters.lastDayOfMonth()).getDayOfMonth();
-        LocalDateTime time = LocalDateTime.of(localDateTime.getYear(), localDateTime.getMonth(), 1, 3, 0);
-        for (int i = 1; i < dayOfMonth + 1; i++) {
-            result.addAll(upbitCandleClient.getMinuteCandle(MinuteType.FIVE, marketType, 144, time));
+        LocalDateTime time = LocalDateTime.now().minusDays(30);
+
+        for (int i = 0; i < 30; i++) {
+            result.addAll(upbitCrawlClient.getMinuteCandle(MinuteType.FIVE, marketType, 144, time));
             time = time.plusHours(12);
             try {
                 Thread.sleep(1000);
@@ -54,7 +54,7 @@ public class UpbitCrawlerService {
             catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            result.addAll(upbitCandleClient.getMinuteCandle(MinuteType.FIVE, marketType, 144, time));
+            result.addAll(upbitCrawlClient.getMinuteCandle(MinuteType.FIVE, marketType, 144, time));
             time = time.plusHours(12);
         }
         result.stream()
@@ -62,7 +62,8 @@ public class UpbitCrawlerService {
                 .forEach(btc5MinuteCandleRepository::save);
     }
 
-    public MinuteCandle getCurrent5MinCandleInfo(MarketType marketType) {
-        return upbitCandleClient.getMinuteCandle(MinuteType.FIVE, marketType, 1, LocalDateTime.now()).get(0);
+    @CrawlErrorHandler
+    public MinuteCandle getRecent5MinCandleInfo(MarketType marketType) {
+        return upbitCrawlClient.getMinuteCandle(MinuteType.FIVE, marketType, 1, LocalDateTime.now()).get(0);
     }
 }

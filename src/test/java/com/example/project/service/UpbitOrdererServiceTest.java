@@ -1,6 +1,6 @@
 package com.example.project.service;
 
-import com.example.project.client.UpbitBacktestClient;
+import com.example.project.client.UpbitAssetsClient;
 import com.example.project.dto.OrderResult;
 import com.example.project.dto.UpbitAsset;
 import com.example.project.enums.MarketType;
@@ -16,7 +16,7 @@ class UpbitOrdererServiceTest {
     private UpbitOrdererService upbitOrdererService;
 
     @Autowired
-    private UpbitBacktestClient upbitBacktestClient;
+    private UpbitAssetsClient upbitAssetsClient;
 
     @Test
     void buy() {
@@ -26,7 +26,7 @@ class UpbitOrdererServiceTest {
 
     @Test
     void sell() {
-        Map<String, UpbitAsset > wallet = upbitBacktestClient.getUpbitWallet();
+        Map<String, UpbitAsset > wallet = upbitAssetsClient.getUpbitWallet();
         UpbitAsset btc = wallet.get("BTC");
 
         OrderResult result = upbitOrdererService.sell(MarketType.KRW_BTC, btc.getBalance());

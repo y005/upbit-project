@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Aspect
 @Component
-public class UpbitBacktestClientAop {
-    @Around("@annotation(com.example.project.annotation.BacktestErrorHandler)")
+public class UpbitNotificationClientAop {
+    @Around("@annotation(com.example.project.annotation.AssetsErrorHandler)")
     public double error(ProceedingJoinPoint joinPoint) {
         try {
             return (double) joinPoint.proceed();

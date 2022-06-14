@@ -1,39 +1,30 @@
 package com.example.project.client;
 
-import com.example.project.dto.UpbitAsset;
 import com.example.project.entity.Btc5MinuteCandle;
 import com.example.project.enums.TradeType;
-import com.example.project.repository.Btc5MinuteCandleRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 @Component
 @AllArgsConstructor
 public class Btc5MinInvestmentStrategy implements InvestmentStrategy {
-    private final Btc5MinuteCandleRepository btc5MinuteCandleRepository;
-    private final UpbitBacktestClient upbitBacktestClient;
-
     @Override
-    public TradeType makeDecision() {
-        int count = 0;
-        Btc5MinuteCandle cur, prev = null;
-        LocalDateTime before1Hour = LocalDateTime.now().minusHours(1);
-        List<Btc5MinuteCandle> result = btc5MinuteCandleRepository.findBtc5MinuteCandlesByTimeGreaterThanOrderByTimeDesc(before1Hour);
+    public TradeType makeDecision(List<Btc5MinuteCandle> result, int DROP_CNT, int DROP_RATE) {
+            int count = 0;
+            Btc5MinuteCandle cur, prev = null;
 
-        for (int i = 0; (i < result.size()) && (count < 3); i++) {
-            cur = result.get(i);
-            if (isOkayToContinue(prev, cur)) {
-                if (isOkayToCount(prev, cur)) {++count;}
+            for (int i = 0; (i < result.size()) && (count < 3); i++) {
+                cur = result.get(i);
+                if (isOkayToContinue(prev, cur)) {
+                    if (isOkayToCount(prev, cur, DROP_RATE)) {++count;}
+                }
+                else {break;}
+                prev = cur;
             }
-            else {break;}
-            prev = cur;
-        }
-        if (isOkayToAsk(result.get(0))) {return TradeType.ASK;}
-        else if (isOkayToBid(count)) {return TradeType.BID;}
+            if (isOkayToAsk(result.get(0))) {return TradeType.ASK;}
+            else if (isOkayToBid(count, DROP_CNT)) {return TradeType.BID;}
         return TradeType.HOLD;
     }
 
@@ -46,12 +37,12 @@ public class Btc5MinInvestmentStrategy implements InvestmentStrategy {
         return btc5MinuteCandle.getOpeningPrice() > btc5MinuteCandle.getTradePrice();
     }
 
-    private boolean isOkayToCount(Btc5MinuteCandle prev, Btc5MinuteCandle cur) {
-        return (prev != null) && (checkBigDrop(prev, cur));
+    private boolean isOkayToCount(Btc5MinuteCandle prev, Btc5MinuteCandle cur, int DROP_RATE) {
+        return (prev != null) && (checkBigDrop(prev, cur, DROP_RATE));
     }
 
-    private boolean checkBigDrop(Btc5MinuteCandle prev, Btc5MinuteCandle cur) {
-        return calculateDropRatio(prev, cur) >= 33;
+    private boolean checkBigDrop(Btc5MinuteCandle prev, Btc5MinuteCandle cur, int DROP_RATE) {
+        return calculateDropRatio(prev, cur) >= DROP_RATE;
     }
 
     private double calculateDropRatio(Btc5MinuteCandle prev, Btc5MinuteCandle cur) {
@@ -62,16 +53,10 @@ public class Btc5MinInvestmentStrategy implements InvestmentStrategy {
     }
 
     private boolean isOkayToAsk(Btc5MinuteCandle cur) {
-        //최근 캔들 차트가 양봉이고 코인을 보유하고 있는 경우 전량 매도
-        return haveBtc() && !checkMinusCandle(cur);
+        return !checkMinusCandle(cur);
     }
 
-    private boolean haveBtc() {
-        Map<String, UpbitAsset> result = upbitBacktestClient.getUpbitWallet();
-        return result.containsKey("BTC");
-    }
-
-    private boolean isOkayToBid(int count) {
-        return count >= 3;
+    private boolean isOkayToBid(int count, int DROP_CNT) {
+        return count >= DROP_CNT;
     }
 }

@@ -1,5 +1,5 @@
 package com.example.project.annotation;
 
 @ErrorHandler
-public @interface BacktestErrorHandler {
+public @interface AssetsErrorHandler {
 }

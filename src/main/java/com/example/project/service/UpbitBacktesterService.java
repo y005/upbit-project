@@ -1,20 +1,12 @@
 package com.example.project.service;
 
-import com.example.project.client.SlackWebhookClient;
 import com.example.project.client.UpbitBacktestClient;
-import com.example.project.dto.UpbitAsset;
-import com.example.project.entity.Assets;
-import com.example.project.entity.Wallet;
 import com.example.project.enums.MarketType;
-import com.example.project.repository.AssetsRepository;
-import com.trader.common.utils.MinuteCandle;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDateTime;
 
 @Slf4j
 @Component
@@ -22,40 +14,50 @@ import java.util.Map;
 public class UpbitBacktesterService {
     private final UpbitBacktestClient upbitBacktestClient;
     private final UpbitCrawlerService upbitCrawlerService;
-    private final AssetsRepository assetsRepository;
-    private final SlackWebhookClient slackWebhookClient;
+    private final SlackService slackService;
 
-    public void sendWalletInfo() {
-        Assets assets = updateWallet();
-        slackWebhookClient.sendMessage(assets);
-        log.info("슬랙 메세지 전송");
+    public static class HyperParams {
+        public int DROP_CNT;
+        public int DROP_RATE;
+        public double maxValue;
+
+        public HyperParams(int DROP_CNT, int DROP_RATE, double maxValue) {
+            this.DROP_CNT = DROP_CNT;
+            this.DROP_RATE = DROP_RATE;
+            this.maxValue = 0d;
+        }
+
+        @Override
+        public String toString() {
+            return "HyperParams{" +
+                    "DROP_CNT=" + DROP_CNT +
+                    ", DROP_RATE=" + DROP_RATE +
+                    ", maxValue=" + maxValue +
+                    '}';
+        }
     }
 
-    @Transactional
-    public Assets updateWallet() {
-        Map<String, UpbitAsset> walletInfo = upbitBacktestClient.getUpbitWallet();
-        //코인별 개별 수익 및 수익률 계산
-        List<Wallet> wallets = walletInfo.values().stream()
-                        .filter((asset)-> !asset.getCurrency().equals("KRW"))
-                        .map((asset) -> {
-                            MarketType type = MarketType.toMarketType("KRW-" + asset.getCurrency());
-                            MinuteCandle marketInfo = upbitCrawlerService.getCurrent5MinCandleInfo(type);
-                            return Wallet.of(asset, marketInfo);
-                        }).toList();
+    public HyperParams backtesting() {
+        upbitCrawlerService.saveCoin5MinCandleInfoBefore1Month(MarketType.KRW_BTC);
+        HyperParams hyperParams = findBestHyperParams();
+        slackService.sendBacktestInfo(hyperParams);
+        return hyperParams;
+    }
 
-        if (wallets.isEmpty()) {
-            Assets entity = new Assets(upbitBacktestClient.getMoney(), upbitBacktestClient.getMoney(), 0, 0);
-            assetsRepository.save(entity);
-            return entity;
+    private HyperParams findBestHyperParams() {
+        HyperParams hyperParams = new HyperParams(0,0, 0);
+        double value;
+
+        for (int i = 1; i < 10; i++) {
+            for (int j = 1; j < 5; j++) {
+                value = upbitBacktestClient.testInvestmentStrategy(i, j);
+                if (value > hyperParams.maxValue) {
+                    hyperParams.DROP_RATE = i;
+                    hyperParams.DROP_CNT = j;
+                    hyperParams.maxValue = value;
+                }
+            }
         }
-        //전체 수익 및 수익률 계산
-        double totalTradePrice = wallets.stream().map((e)-> e.getBalance() * e.getTradePrice()).reduce(0d, Double::sum);
-        double totalProfit = wallets.stream().map(Wallet::getProfit).reduce(0d, Double::sum);
-        double totalInvest = wallets.stream().map((e)-> e.getBalance() * e.getAvgBuyPrice()).reduce(0d, Double::sum);
-        double totalProfitRate = (totalProfit / totalInvest) * 100;
-        Assets entity = new Assets(totalTradePrice, totalInvest, totalProfit, totalProfitRate);
-        entity.setWallets(wallets);
-        assetsRepository.save(entity);
-        return entity;
+        return hyperParams;
     }
 }

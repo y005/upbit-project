@@ -1,9 +1,11 @@
 package com.example.project.application;
 
 import com.example.project.annotation.ErrorHandler;
+import com.example.project.client.UpbitBacktestClient;
 import com.example.project.config.ModeConfig;
 import com.example.project.enums.MarketType;
 import com.example.project.enums.ModeType;
+import com.example.project.service.UpbitAssetsService;
 import com.example.project.service.UpbitBacktesterService;
 import com.example.project.service.UpbitCrawlerService;
 import com.example.project.service.UpbitOrdererService;
@@ -25,6 +27,7 @@ public class MainApplication implements ApplicationRunner {
     private ModeConfig modeConfig;
     private UpbitCrawlerService upbitCrawlerService;
     private UpbitOrdererService upbitOrdererService;
+    private UpbitAssetsService upbitAssetsService;
     private UpbitBacktesterService upbitBacktesterService;
 
     @Override
@@ -40,9 +43,16 @@ public class MainApplication implements ApplicationRunner {
             case BACKGROUND -> {
                 upbitCrawlerService.saveCoin5MinCandleInfoBefore1Hour(MarketType.KRW_BTC, LocalDateTime.now());
                 upbitOrdererService.trade(MarketType.KRW_BTC);
-                upbitBacktesterService.sendWalletInfo();
+                upbitAssetsService.sendWalletInfo();
             }
-            case MONITORING -> upbitBacktesterService.sendWalletInfo();
+            case MONITORING -> {
+                upbitAssetsService.sendWalletInfo();
+            }
+            case BACKTESTER -> {
+                var result = upbitBacktesterService.backtesting();
+                log.info("백테스팅 결과 - {}", result.toString());
+            }
+            default -> {}
         }
     }
 }
