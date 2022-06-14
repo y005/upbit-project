@@ -8,9 +8,21 @@
 
 #### 제공 기능
 - [X] 비트코인 5분봉 차트 정보 크롤링
-- [X] 단타 전략(5분봉 3틱룰)을 사용한 자동 매매
-- [X] 자산 현황 슬랙 알림 서비스
-- [ ] 과거 비트코인 데이터를 활용한 단타 전략 백테스팅
+- [X] 단타 전략을 사용한 자동 매매
+  - 기존 5분봉 3틱룰의 원리를 활용
+  - 백테스팅을 통해 매수를 결정할 하락폭과 1틱의 갯수를 결정
+- [X] 자산 현황, 매매 정보, 백테스팅 결과에 대한 알림 서비스
+- [X] 지난 한 달 간의 비트코인 데이터를 활용한 단타 전략 백테스팅
 
 #### 사용 기술
-`Spring Boot` `Spring JPA` `MySQL` `Upbit API` `Webhook` 
+`Spring Boot` `Spring JPA` `MySQL` `Docker` `Upbit API` `Slack API`
+
+
+#### 결과 화면
+
+![](https://velog.velcdn.com/images/y005/post/1ed7b273-8f74-4518-af5e-8b4af720d00b/image.png)
+
+![](https://velog.velcdn.com/images/y005/post/490a4d10-b59f-4c39-a0ac-98b68e01264c/image.png)
+
+![](https://velog.velcdn.com/images/y005/post/1b828a0b-7956-4903-87ff-57bcd5280611/image.png)
+

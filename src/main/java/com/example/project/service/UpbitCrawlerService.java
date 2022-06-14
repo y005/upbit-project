@@ -62,7 +62,6 @@ public class UpbitCrawlerService {
                 .forEach(btc5MinuteCandleRepository::save);
     }
 
-    @CrawlErrorHandler
     public MinuteCandle getRecent5MinCandleInfo(MarketType marketType) {
         return upbitCrawlClient.getMinuteCandle(MinuteType.FIVE, marketType, 1, LocalDateTime.now()).get(0);
     }

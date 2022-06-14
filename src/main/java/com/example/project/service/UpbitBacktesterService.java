@@ -29,11 +29,9 @@ public class UpbitBacktesterService {
 
         @Override
         public String toString() {
-            return "HyperParams{" +
-                    "DROP_CNT=" + DROP_CNT +
-                    ", DROP_RATE=" + DROP_RATE +
-                    ", maxValue=" + maxValue +
-                    '}';
+            return "백테스팅 결과: " + DROP_RATE +
+                    "%의 하락폭이 " + DROP_CNT + "번 발생할 때 매수하는 전략을 선택할 때 과거 한 달 간의 모의 투자 이익률이 " + String.format("%.3f", maxValue) +
+                    "% 발생했습니다.";
         }
     }
 
