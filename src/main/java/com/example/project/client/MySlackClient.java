@@ -70,6 +70,6 @@ public class MySlackClient implements SlackClient {
         RequestEntity<SlackMessage> request = RequestEntity.post(url)
                 .accept(MediaType.APPLICATION_JSON)
                 .body(slackMessage);
-        restTemplate.exchange(request, Object.class);
+        restTemplate.exchange(request, Void.class);
     }
 }

@@ -11,35 +11,36 @@ import java.util.UUID;
 @Component
 @AllArgsConstructor
 public class UpbitUtil {
-    private final UpbitConfig upbitConfig;
 
-    public String makeToken() {
-        String accessKey = upbitConfig.getAccessKey();
-        String secretKey = upbitConfig.getSecretKey();
+  private final UpbitConfig upbitConfig;
 
-        Algorithm algorithm = Algorithm.HMAC256(secretKey);
-        String jwtToken = JWT.create()
-                .withClaim("access_key", accessKey)
-                .withClaim("nonce", UUID.randomUUID().toString())
-                .sign(algorithm);
+  public String makeToken() {
+    String accessKey = upbitConfig.getAccessKey();
+    String secretKey = upbitConfig.getSecretKey();
 
-        String authenticationToken = "Bearer " + jwtToken;
+    Algorithm algorithm = Algorithm.HMAC256(secretKey);
+    String jwtToken = JWT.create()
+        .withClaim("access_key", accessKey)
+        .withClaim("nonce", UUID.randomUUID().toString())
+        .sign(algorithm);
 
-        return authenticationToken;
-    }
+    String authenticationToken = "Bearer " + jwtToken;
 
-    public String makeToken(String queryHash) {
-        String accessKey = upbitConfig.getAccessKey();
-        String secretKey = upbitConfig.getSecretKey();
+    return authenticationToken;
+  }
 
-        Algorithm algorithm = Algorithm.HMAC256(secretKey);
-        String jwtToken = JWT.create()
-                .withClaim("access_key", accessKey)
-                .withClaim("nonce", UUID.randomUUID().toString())
-                .withClaim("query_hash", queryHash)
-                .withClaim("query_hash_alg", "SHA512")
-                .sign(algorithm);
-        String authenticationToken = "Bearer " + jwtToken;
-        return authenticationToken;
-    }
+  public String makeToken(String queryHash) {
+    String accessKey = upbitConfig.getAccessKey();
+    String secretKey = upbitConfig.getSecretKey();
+
+    Algorithm algorithm = Algorithm.HMAC256(secretKey);
+    String jwtToken = JWT.create()
+        .withClaim("access_key", accessKey)
+        .withClaim("nonce", UUID.randomUUID().toString())
+        .withClaim("query_hash", queryHash)
+        .withClaim("query_hash_alg", "SHA512")
+        .sign(algorithm);
+    String authenticationToken = "Bearer " + jwtToken;
+    return authenticationToken;
+  }
 }

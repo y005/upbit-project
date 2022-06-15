@@ -10,18 +10,18 @@ import org.springframework.stereotype.Component;
 @Component
 @AllArgsConstructor
 public class SlackService {
-    private final SlackClient slackClient;
-    private final SlackConfig slackConfig;
+  private final SlackClient slackClient;
+  private final SlackConfig slackConfig;
 
-    public void sendAssetsInfo(Object data) {
-        slackClient.sendMessageUsingOauth(data, slackConfig.getAssetsChannel());
-    }
+  public void sendAssetsInfo(Object data) {
+    slackClient.sendMessageUsingOauth(data, slackConfig.getAssetsChannel());
+  }
 
-    public void sendOrderInfo(Object data) {
-        slackClient.sendMessageUsingOauth(data, slackConfig.getOrderChannel());
-    }
+  public void sendOrderInfo(Object data) {
+    slackClient.sendMessageUsingOauth(data, slackConfig.getOrderChannel());
+  }
 
-    public void sendBacktestInfo(Object data) {
-        slackClient.sendMessageUsingOauth(data, slackConfig.getBacktestChannel());
-    }
+  public void sendBacktestInfo(Object data) {
+    slackClient.sendMessageUsingOauth(data, slackConfig.getBacktestChannel());
+  }
 }

@@ -3,26 +3,27 @@ package com.example.project.enums;
 import java.util.Arrays;
 
 public enum OrderType {
-    LIMIT("limit"),
-    PRICE("price"),
-    MARKET("market");
+  LIMIT("limit"),
+  PRICE("price"),
+  MARKET("market");
 
-    private final String type;
+  private final String type;
 
-    OrderType(String type) {
-        this.type = type;
-    }
+  OrderType(String type) {
+    this.type = type;
+  }
 
-    public static OrderType toOrderType(String type) {
-        return Arrays.stream(values()).filter((e)->e.toString().equals(type)).findFirst().orElseThrow(()-> new RuntimeException("type not found"));
-    }
+  public static OrderType toOrderType(String type) {
+    return Arrays.stream(values()).filter((e) -> e.toString().equals(type)).findFirst()
+        .orElseThrow(() -> new RuntimeException("type not found"));
+  }
 
-    public String getType() {
-        return toString();
-    }
+  public String getType() {
+    return toString();
+  }
 
-    @Override
-    public String toString() {
-        return type;
-    }
+  @Override
+  public String toString() {
+    return type;
+  }
 }

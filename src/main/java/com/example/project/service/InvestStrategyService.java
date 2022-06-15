@@ -13,9 +13,10 @@ import java.util.List;
 @Component
 @AllArgsConstructor
 public class InvestStrategyService {
-    private final InvestmentStrategy investmentStrategy;
 
-    public TradeType makeDecision(List<Btc5MinuteCandle> list) {
-        return investmentStrategy.makeDecision(list, 1, 2);
-    }
+  private final InvestmentStrategy investmentStrategy;
+
+  public TradeType makeDecision(List<Btc5MinuteCandle> list) {
+    return investmentStrategy.makeDecision(list, 1, 2);
+  }
 }
